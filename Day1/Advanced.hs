@@ -1,9 +1,10 @@
 module Day1.Simple where
 
-import           Utils.IO (loadInput)
-import Data.Char (isDigit, digitToInt)
-import Utils.Lists (maybeHead, maybeLast)
-import Data.Maybe (catMaybes)
+import           Data.Char   (digitToInt, isDigit)
+import           Data.Maybe  (catMaybes)
+import           Day1.Common (process)
+import           Utils.IO    (loadInput)
+import           Utils.Lists (maybeHead, maybeLast)
 
 findDigits :: String -> [Int]
 findDigits ('o' : 'n' : 'e' : rest) = 1 : findDigits ("ne" ++ rest)
@@ -18,9 +19,5 @@ findDigits ('n' : 'i' : 'n' : 'e' : rest) = 9 : findDigits ("ine" ++ rest)
 findDigits (c:rest) = [digitToInt c | isDigit c] ++ findDigits rest
 findDigits _ = []
 
-firstLast :: [Int] -> Int
-firstLast [] = 0
-firstLast xs = (head xs * 10) + last xs
-
 main :: IO ()
-main = loadInput >>= print . sum . map (firstLast . findDigits) . lines
+main = loadInput >>= print . process findDigits

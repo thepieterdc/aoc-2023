@@ -1,13 +1,10 @@
 module Day1.Simple where
 
-import           Utils.IO (loadInput)
-import Data.Char (isDigit)
-import Utils.Lists (maybeHead, maybeLast)
-import Data.Maybe (catMaybes)
-
-processLine :: String -> Integer
-processLine line = read (catMaybes [maybeHead numbers, maybeLast numbers]) :: Integer
-    where numbers = filter isDigit line
+import           Data.Char   (digitToInt, isDigit)
+import           Data.Maybe  (catMaybes)
+import           Day1.Common (process)
+import           Utils.IO    (loadInput)
+import           Utils.Lists (maybeHead, maybeLast)
 
 main :: IO ()
-main = loadInput >>= print . sum . map processLine . lines
+main = loadInput >>= print . process (map digitToInt . filter isDigit)
