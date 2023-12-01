@@ -1,9 +1,9 @@
 module Day1.Simple where
 
-import           Utils.IO (loadInput)
-import Data.Char (isDigit, digitToInt)
-import Utils.Lists (maybeHead, maybeLast)
-import Data.Maybe (catMaybes)
+import           Data.Char   (digitToInt, isDigit)
+import           Data.Maybe  (catMaybes)
+import           Utils.IO    (loadInput)
+import           Utils.Lists (maybeHead, maybeLast)
 
 findDigits :: String -> [Int]
 findDigits ('o' : 'n' : 'e' : rest) = 1 : findDigits ("ne" ++ rest)

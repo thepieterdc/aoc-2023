@@ -1,9 +1,9 @@
 module Day1.Simple where
 
-import           Utils.IO (loadInput)
-import Data.Char (isDigit)
-import Utils.Lists (maybeHead, maybeLast)
-import Data.Maybe (catMaybes)
+import           Data.Char   (isDigit)
+import           Data.Maybe  (catMaybes)
+import           Utils.IO    (loadInput)
+import           Utils.Lists (maybeHead, maybeLast)
 
 processLine :: String -> Integer
 processLine line = read (catMaybes [maybeHead numbers, maybeLast numbers]) :: Integer
