@@ -28,6 +28,11 @@ maybeHead :: [a] -> Maybe a
 maybeHead []     = Nothing
 maybeHead (a:as) = Just a
 
+-- |Gets the last item of the list if the list is not empty.
+maybeLast :: [a] -> Maybe a
+maybeLast [] = Nothing
+maybeLast as = Just $ last as
+
 -- |Counts the amount of Nothing elements in the given list of Maybes.
 nothings :: [Maybe a] -> Int
 nothings []             = 0
