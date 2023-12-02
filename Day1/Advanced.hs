@@ -1,10 +1,8 @@
-module Day1.Simple where
+module Day1.Advanced where
 
 import           Data.Char   (digitToInt, isDigit)
-import           Data.Maybe  (catMaybes)
 import           Day1.Common (process)
 import           Utils.IO    (loadInput)
-import           Utils.Lists (maybeHead, maybeLast)
 
 findDigits :: String -> [Int]
 findDigits ('o' : 'n' : 'e' : rest) = 1 : findDigits ("ne" ++ rest)
