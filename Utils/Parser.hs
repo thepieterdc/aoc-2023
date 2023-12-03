@@ -6,7 +6,7 @@ License     : MIT
 
 Contains methods to parse strings into usable structures.
 -}
-module Utils.Parser (Parser, char, digits, doParse, end, guard, integer, many, optional, some, string, token, until, void, (<|>)) where
+module Utils.Parser (Parser, char, digit, digits, doParse, end, guard, integer, many, optional, some, spot, string, token, until, void, (<|>)) where
 
 import           Control.Applicative (Alternative, empty, many, some, (<|>))
 import           Control.Monad       (MonadPlus, ap, guard, liftM, mplus, mzero,
