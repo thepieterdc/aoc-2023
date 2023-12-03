@@ -7,6 +7,8 @@ License     : MIT
 Contains methods to handle working with grids.
 -}
 module Utils.Grid (module Utils.Grid) where
+import           Data.Set (Set)
+import qualified Data.Set as Set
 
 -- |A coordinate defined as a pair of (x, y)
 type Coordinate = (Int, Int)
@@ -14,6 +16,9 @@ type Coordinate = (Int, Int)
 -- |Calculates the Chebyshev distance between two coordinates.
 chebyshev :: Coordinate -> Coordinate -> Int
 chebyshev (x1, y1) (x2, y2) = maximum $ map abs [x1 - x2, y1 - y2]
+
+chebyshevNeighbours :: Coordinate -> Set Coordinate
+chebyshevNeighbours (x, y) = Set.fromList [(x - 1, y - 1), (x - 1, y), (x - 1, y + 1), (x, y - 1), (x, y + 1), (x + 1, y - 1), (x + 1, y), (x + 1, y + 1)]
 
 -- |Gets whether two coordinates are orthogonally placed.
 --  If both coordinates are equal, they are considered orthogonal.
