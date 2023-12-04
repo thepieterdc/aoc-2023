@@ -1,6 +1,6 @@
 module Day4.Advanced where
 import           Data.Function (on)
-import           Day4.Common   (Card (correctNumbers, identifier), parse)
+import           Day4.Common   (Card (correctNumbers), parse)
 import           Utils.IO      (loadInput)
 
 cardsWon :: [(Card, Int)] -> Int

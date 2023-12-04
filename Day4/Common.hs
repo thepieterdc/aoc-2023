@@ -5,7 +5,7 @@ import           Utils.Parser (Parser, digits, doParse, some, string, token,
                                whitespace, (<|>))
 
 
-data Card = Card { identifier :: Int, correctNumbers :: Int } deriving (Eq, Show)
+newtype Card = Card { correctNumbers :: Int } deriving (Eq, Show)
 
 -- Parsing
 
@@ -17,13 +17,13 @@ parseDraw :: Parser Card
 parseDraw = do
     string "Card";
     whitespace;
-    identifier <- digits;
+    digits;
     token ':'
     result <- parseNumbers;
     string " |";
     bet <- parseNumbers;
     token '\n';
-    return $ Card (read identifier :: Int) $ Set.size (Set.intersection bet result)
+    return $ Card $ Set.size (Set.intersection bet result)
 
 parseNumbers :: Parser (Set String)
 parseNumbers = parseMore <|> parseLast where
