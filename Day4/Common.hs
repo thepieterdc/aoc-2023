@@ -5,7 +5,7 @@ import           Utils.Parser (Parser, digits, doParse, some, string, token,
                                whitespace, (<|>))
 
 
-data Card = Card { identifier :: Int, result :: [Int], bet :: [Int] } deriving (Eq, Show)
+data Card = Card { identifier :: Int, correctNumbers :: Int } deriving (Eq, Show)
 
 -- Parsing
 
@@ -14,15 +14,18 @@ parse = doParse parser where
     parser = do some parseDraw
 
 parseDraw :: Parser Card
-parseDraw = do {identifier <- parseIdentifier; result <- parseNumbers; string " |"; bet <- parseNumbers; token '\n'; return $ Card identifier result bet} where
-    parseIdentifier = do {string "Card"; whitespace; id <- digits; token ':'; return (read id :: Int)}
+parseDraw = do
+    string "Card";
+    whitespace;
+    identifier <- digits;
+    token ':'
+    result <- parseNumbers;
+    string " |";
+    bet <- parseNumbers;
+    token '\n';
+    return $ Card (read identifier :: Int) $ Set.size (Set.intersection bet result)
 
-parseNumbers :: Parser [Int]
+parseNumbers :: Parser (Set String)
 parseNumbers = parseMore <|> parseLast where
-    parseMore = do {whitespace; num <- digits; rest <- parseNumbers; return $ (read num :: Int) : rest}
-    parseLast = do {whitespace; num <- digits; return [read num :: Int]}
-
--- Functions
-
-matchingNumbers :: Card -> Int
-matchingNumbers card = Set.size (Set.intersection (Set.fromList (bet card)) (Set.fromList (result card)))
+    parseMore = do {whitespace; num <- digits; Set.insert num <$> parseNumbers}
+    parseLast = do {whitespace; Set.singleton <$> digits}
