@@ -6,7 +6,7 @@ License     : MIT
 
 Contains methods to parse strings into usable structures.
 -}
-module Utils.Parser (Parser, char, digit, digits, doParse, end, guard, integer, many, optional, some, spot, string, token, until, void, (<|>)) where
+module Utils.Parser (Parser, char, digit, digits, doParse, end, guard, integer, many, optional, some, spot, string, token, until, void, whitespace, (<|>)) where
 
 import           Control.Applicative (Alternative, empty, many, some, (<|>))
 import           Control.Monad       (MonadPlus, ap, guard, liftM, mplus, mzero,
@@ -120,3 +120,7 @@ token c = void (spot (== c))
 -- |Parses the string until the given character is found.
 until :: Char -> Parser String
 until c = do {cs <- some $ spot (/= c); c' <- char; return $ cs ++ [c]}
+
+-- |Parses whitespace, discarding the result.
+whitespace :: Parser ()
+whitespace = void (some $ spot (== ' '))
