@@ -5,10 +5,23 @@ import qualified Data.Set     as Set
 import           Utils.Lists  (maybeHead)
 import           Utils.Parser (Parser, digits, doParse, integer, some, string,
                                token, whitespace, (<|>))
+import Data.List (sortBy)
+import Data.Function (on)
 
-data Range = Range { destStart :: Int, sourceStart :: Int, rangeLength :: Int} deriving (Eq, Show)
+type SeedRange = (Int, Int)
 
-data Almanac = Almanac { seeds :: [Int], seedsToSoils :: [Range], soilsToFertilizers :: [Range], fertilizersToWaters :: [Range], watersToLights :: [Range], lightsToTemperatures :: [Range], temperaturesToHumidities :: [Range], humiditiesToLocations :: [Range]} deriving (Eq, Show)
+data Transform = Transform { destStart :: Int, sourceStart :: Int, rangeLength :: Int} deriving (Eq, Show)
+
+data Almanac = Almanac {
+    seeds :: [Int],
+    seedsToSoils :: [Transform],
+    soilsToFertilizers :: [Transform],
+    fertilizersToWaters :: [Transform],
+    watersToLights :: [Transform],
+    lightsToTemperatures :: [Transform],
+    temperaturesToHumidities :: [Transform],
+    humiditiesToLocations :: [Transform]
+} deriving (Eq, Show)
 
 parse :: String -> Almanac
 parse = doParse parser where
@@ -16,33 +29,41 @@ parse = doParse parser where
         string "seeds:";
         seeds <- parseSeeds
         string "\n\nseed-to-soil map:\n"
-        seedsToSoils <- parseRanges
+        seedsToSoils <- parseTransforms
         string "\nsoil-to-fertilizer map:\n"
-        soilsToFertilizers <- parseRanges
+        soilsToFertilizers <- parseTransforms
         string "\nfertilizer-to-water map:\n"
-        fertilizersToWaters <- parseRanges
+        fertilizersToWaters <- parseTransforms
         string "\nwater-to-light map:\n"
-        watersToLights <- parseRanges
+        watersToLights <- parseTransforms
         string "\nlight-to-temperature map:\n"
-        lightsToTemperatures <- parseRanges
+        lightsToTemperatures <- parseTransforms
         string "\ntemperature-to-humidity map:\n"
-        temperaturesToHumidities <- parseRanges
+        temperaturesToHumidities <- parseTransforms
         string "\nhumidity-to-location map:\n"
-        Almanac seeds seedsToSoils soilsToFertilizers fertilizersToWaters watersToLights lightsToTemperatures temperaturesToHumidities <$> parseRanges
+        Almanac seeds seedsToSoils soilsToFertilizers fertilizersToWaters watersToLights lightsToTemperatures temperaturesToHumidities <$> parseTransforms
 
 parseSeeds :: Parser [Int]
 parseSeeds = do {parseMore <|> parseLast} where
     parseMore = do {whitespace; num <- integer; rest <- parseSeeds; return (num : rest)}
     parseLast = do {whitespace; num <- integer; return [num]}
 
-parseRanges :: Parser [Range]
-parseRanges = do {parseMore <|> parseLast} where
-    parseMore = do {ds <- integer; whitespace; ss <- integer; whitespace; len <- integer; token '\n'; rest <- parseRanges; return $ Range ds ss len : rest}
-    parseLast = do {ds <- integer; whitespace; ss <- integer; whitespace; len <- integer; token '\n'; return [Range ds ss len]}
+parseTransforms :: Parser [Transform]
+parseTransforms = do {parseMore <|> parseLast} where
+    parseMore = do {ds <- integer; whitespace; ss <- integer; whitespace; len <- integer; token '\n'; rest <- parseTransforms; return $ Transform ds ss len : rest}
+    parseLast = do {ds <- integer; whitespace; ss <- integer; whitespace; len <- integer; token '\n'; return [Transform ds ss len]}
 
-mapping :: [Range] -> Int -> Int
-mapping range seed = maybe seed (\r -> destStart r + (seed - sourceStart r)) match where
-    match = maybeHead [r | r <- range, sourceStart r <= seed && (seed < sourceStart r + rangeLength r)]
+-- progress :: [Transform] -> SeedRange -> [SeedRange]
+progress transforms input = result where
+    -- Find all transforms that can process either the start or the end of the range.
+    applicableTransforms = sortBy (compare `on` sourceStart) [tf | tf <- transforms, sourceStart tf <= start || (end < sourceStart tf + rangeLength tf)]
+    result = progress' input applicableTransforms where
+        progress' ()
+        progress' _ [] = []
 
-solve :: (Almanac -> [Int]) -> Almanac -> Int
-solve seedsFn a = minimum $ Set.map (mapping (humiditiesToLocations a) . mapping (temperaturesToHumidities a) . mapping (lightsToTemperatures a) . mapping (watersToLights a) . mapping (fertilizersToWaters a) . mapping (soilsToFertilizers a) . mapping (seedsToSoils a)) $ Set.fromList (seedsFn a)
+    -- If start can be mapped, map as far as possible and call recursive again
+    -- If start cannot be mapped, find first point where it can be and call recursive again
+
+solve :: (Almanac -> [SeedRange]) -> Almanac -> Maybe Transform
+    -- Merge tuples after every call to progress
+solve seedsFn a = progress (seedsToSoils a) (head (seedsFn a))

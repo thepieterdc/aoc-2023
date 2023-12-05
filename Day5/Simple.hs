@@ -1,7 +1,10 @@
 module Day5.Simple where
 
-import           Day5.Common (Almanac (seeds), parse, solve)
+import           Day5.Common (Almanac (seeds), parse, solve, SeedRange)
 import           Utils.IO    (loadInput)
 
+resolveSeeds :: Almanac -> [SeedRange]
+resolveSeeds almanac = map (\s -> (s, s)) (seeds almanac)
+
 main :: IO ()
-main = loadInput >>= print . solve seeds . parse
+main = loadInput >>= print . solve resolveSeeds . parse
