@@ -7,9 +7,9 @@ resolveSeeds :: Almanac -> [SeedRange]
 resolveSeeds almanac = resolve' (seeds almanac) where
     resolve' :: [Int] -> [SeedRange]
     resolve' [] = []
-    resolve' list = resolved : resolve' (drop 2 list) where
-        startEnd = take 2 list
-        resolved = (head startEnd, head startEnd + last startEnd - 1)
+    resolve' list = resolved : resolve' rest where
+        (pair, rest) = splitAt 2 list
+        resolved = (head pair, head pair + last pair - 1)
 
 main :: IO ()
 main = loadInput >>= print . solve resolveSeeds . parse

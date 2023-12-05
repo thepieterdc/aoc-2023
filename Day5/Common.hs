@@ -1,26 +1,25 @@
 module Day5.Common where
 
+import           Data.List    (sortOn)
 import           Data.Maybe   (fromMaybe)
 import qualified Data.Set     as Set
 import           Utils.Lists  (maybeHead)
 import           Utils.Parser (Parser, digits, doParse, integer, some, string,
                                token, whitespace, (<|>))
-import Data.List (sortBy)
-import Data.Function (on)
 
 type SeedRange = (Int, Int)
 
-data Transform = Transform { destStart :: Int, sourceStart :: Int, rangeLength :: Int} deriving (Eq, Show)
+data Transform = Transform { destStart :: Int, destEnd :: Int, sourceStart :: Int, sourceEnd :: Int} deriving (Eq, Show)
 
 data Almanac = Almanac {
-    seeds :: [Int],
-    seedsToSoils :: [Transform],
-    soilsToFertilizers :: [Transform],
-    fertilizersToWaters :: [Transform],
-    watersToLights :: [Transform],
-    lightsToTemperatures :: [Transform],
+    seeds                    :: [Int],
+    seedsToSoils             :: [Transform],
+    soilsToFertilizers       :: [Transform],
+    fertilizersToWaters      :: [Transform],
+    watersToLights           :: [Transform],
+    lightsToTemperatures     :: [Transform],
     temperaturesToHumidities :: [Transform],
-    humiditiesToLocations :: [Transform]
+    humiditiesToLocations    :: [Transform]
 } deriving (Eq, Show)
 
 parse :: String -> Almanac
@@ -50,20 +49,29 @@ parseSeeds = do {parseMore <|> parseLast} where
 
 parseTransforms :: Parser [Transform]
 parseTransforms = do {parseMore <|> parseLast} where
-    parseMore = do {ds <- integer; whitespace; ss <- integer; whitespace; len <- integer; token '\n'; rest <- parseTransforms; return $ Transform ds ss len : rest}
-    parseLast = do {ds <- integer; whitespace; ss <- integer; whitespace; len <- integer; token '\n'; return [Transform ds ss len]}
+    parseMore = do {ds <- integer; whitespace; ss <- integer; whitespace; l <- integer; token '\n'; rest <- parseTransforms; return $ Transform ds (ds + l) ss (ss + l - 1) : rest}
+    parseLast = do {ds <- integer; whitespace; ss <- integer; whitespace; l <- integer; token '\n'; return [Transform ds (ds + l) ss (ss + l - 1)]}
 
--- progress :: [Transform] -> SeedRange -> [SeedRange]
-progress transforms input = result where
-    -- Find all transforms that can process either the start or the end of the range.
-    applicableTransforms = sortBy (compare `on` sourceStart) [tf | tf <- transforms, sourceStart tf <= start || (end < sourceStart tf + rangeLength tf)]
-    result = progress' input applicableTransforms where
-        progress' ()
-        progress' _ [] = []
+progress :: [Transform] -> [SeedRange] -> [SeedRange]
+progress tfs ((start, end) : rest) = progress' applicableTfs (start, end) ++ progress tfs rest where
+    applicableTfs = sortOn sourceStart [tf | tf <- tfs, sourceStart tf <= end && sourceEnd tf >= start]
+progress _ [] = []
 
-    -- If start can be mapped, map as far as possible and call recursive again
-    -- If start cannot be mapped, find first point where it can be and call recursive again
+progress' :: [Transform] -> SeedRange -> [SeedRange]
+progress' [] range = [range]
+progress' tfs (start, end) = tfd : (if maxTf == end then [] else progress' newTfs (maxTf + 1, end)) where
+    tf = head tfs
+    maxTf = min end (sourceEnd tf)
+    minTf = max start (sourceStart tf)
+    tfd = if start == minTf then transform tf (start, maxTf) else (start, minTf)
+    newTfs = if start == minTf then drop 1 tfs else tfs
 
-solve :: (Almanac -> [SeedRange]) -> Almanac -> Maybe Transform
-    -- Merge tuples after every call to progress
-solve seedsFn a = progress (seedsToSoils a) (head (seedsFn a))
+transform :: Transform -> (Int, Int) -> (Int, Int)
+transform tf (start, end) = (transformedStart, transformedEnd) where
+    offset = start - sourceStart tf
+    transformedStart = destStart tf + offset
+    transformedEnd = transformedStart + (end - start)
+
+solve :: (Almanac -> [SeedRange]) -> Almanac -> Int
+solve seedsFn a = minimum $ map fst $ foldr (progress . (\ fn -> fn a)) (seedsFn a)
+    [humiditiesToLocations, temperaturesToHumidities, lightsToTemperatures, watersToLights, fertilizersToWaters, soilsToFertilizers, seedsToSoils]
