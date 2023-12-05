@@ -73,5 +73,5 @@ transform tf (start, end) = (transformedStart, transformedEnd) where
     transformedEnd = transformedStart + (end - start)
 
 solve :: (Almanac -> [SeedRange]) -> Almanac -> Int
-solve seedsFn a = minimum $ map fst $ foldr (progress . (\ fn -> fn a)) (seedsFn a)
+solve seedsFn a = minimum $ map fst $ foldr (progress . (\ f -> f a)) (seedsFn a)
     [humiditiesToLocations, temperaturesToHumidities, lightsToTemperatures, watersToLights, fertilizersToWaters, soilsToFertilizers, seedsToSoils]
