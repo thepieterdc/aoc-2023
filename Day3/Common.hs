@@ -3,8 +3,7 @@ import           Data.Char    (isDigit)
 import           Data.Set     (Set)
 import qualified Data.Set     as Set
 import           Utils.Grid   (Coordinate)
-import           Utils.Parser (Parser, digit, doParse, some, spot, token, void,
-                               (<|>))
+import           Utils.Parser (Parser, digit, doParse, some, spot, token, (<|>))
 
 data Item = Part String | Gear | Symbol | Skip deriving (Eq, Show)
 
@@ -23,7 +22,7 @@ parseItem = parsePart <|> parseGear <|> parseSymbol <|> parseSkip where
     parsePart = do {d <- digit; return $ Part [d]}
     parseSkip = do {token '.'; return Skip}
     parseSymbol = do
-        void (spot (\c -> c /= '.' && c /= '*' && c /= '\n' && not (isDigit c)))
+        spot (\c -> c /= '.' && c /= '*' && c /= '\n' && not (isDigit c))
         return Symbol
 
 mergeWithCoordinates :: Int -> [Line] -> [[(Coordinate, Coordinate, Item)]]
