@@ -4,3 +4,5 @@ updates:
     directory: "/"
     reviewers:
       - "thepieterdc"
+    schedule:
+      interval: weekly
