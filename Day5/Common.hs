@@ -1,6 +1,7 @@
 module Day5.Common where
 
 import           Data.Maybe   (fromMaybe)
+import qualified Data.Set     as Set
 import           Utils.Lists  (maybeHead)
 import           Utils.Parser (Parser, digits, doParse, integer, some, string,
                                token, whitespace, (<|>))
@@ -44,4 +45,4 @@ mapping range seed = maybe seed (\r -> destStart r + (seed - sourceStart r)) mat
     match = maybeHead [r | r <- range, sourceStart r <= seed && (seed < sourceStart r + rangeLength r)]
 
 solve :: (Almanac -> [Int]) -> Almanac -> Int
-solve seedsFn a = minimum $ map (mapping (humiditiesToLocations a) . mapping (temperaturesToHumidities a) . mapping (lightsToTemperatures a) . mapping (watersToLights a) . mapping (fertilizersToWaters a) . mapping (soilsToFertilizers a) . mapping (seedsToSoils a)) (seedsFn a)
+solve seedsFn a = minimum $ Set.map (mapping (humiditiesToLocations a) . mapping (temperaturesToHumidities a) . mapping (lightsToTemperatures a) . mapping (watersToLights a) . mapping (fertilizersToWaters a) . mapping (soilsToFertilizers a) . mapping (seedsToSoils a)) $ Set.fromList (seedsFn a)
