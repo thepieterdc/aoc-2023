@@ -1,7 +1,7 @@
 module Day6.Simple where
 
-import           Day6.Common (parse)
+import           Day6.Common (solve)
 import           Utils.IO    (loadInput)
 
 main :: IO ()
-main = loadInput >>= print . parse
+main = loadInput >>= print . solve id
