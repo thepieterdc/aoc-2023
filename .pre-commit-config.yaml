@@ -11,10 +11,10 @@ repos:
         files: '\.hs$'
         language: system
         name: hlint
-    -   id: stylish-haskell
-        entry: stylish-haskell --inplace
+    -   id: ormolu
+        entry: ormolu --mode inplace --no-cabal
         files: '\.hs$'
-        name: stylish-haskell
+        name: ormolu
         language: system
 
 -   repo: https://github.com/pre-commit/pre-commit-hooks
