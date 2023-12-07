@@ -8,8 +8,12 @@ Contains methods to operate on lists.
 -}
 module Utils.Lists (module Utils.Lists) where
 import           Control.Monad (ap)
-import           Data.List     (unfoldr)
+import           Data.List     (unfoldr, group, sort)
 import           Data.Maybe    (listToMaybe)
+import Control.Arrow ((&&&))
+
+frequencies :: Ord a => [a] -> [(a, Int)]
+frequencies = map (head &&& length) . group . sort
 
 -- |Splits the list in groups of the given size.
 groupBySize :: Int -> [a] -> [[a]]
