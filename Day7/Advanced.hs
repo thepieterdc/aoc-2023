@@ -62,10 +62,21 @@ letterToInt :: Char -> Int
 letterToInt 'A' = 14
 letterToInt 'K' = 13
 letterToInt 'Q' = 12
-letterToInt 'J' = 11
 letterToInt 'T' = 10
+letterToInt 'J' = 1
 letterToInt d | isDigit d = read [d] :: Int
 letterToInt d = error [d]
 
+upgradeType :: Hand -> HandType
+upgradeType h
+  -- Five of a kind can never be upgraded as it's already the highest, also this handles
+  -- an edge case where there are no Js in the hand.
+  | typ h == FiveOAK = FiveOAK
+  -- Replace the J's by the highest occurring (non-J) number in the hand.
+  | otherwise = findHandType $ map (\c -> if c == 1 then replacement else c) (cards h)
+  where
+    nonJs = sortOn (Data.Ord.Down . snd) $ frequencies $ filter (/= 1) (cards h)
+    replacement = fst $ head nonJs
+
 main :: IO ()
-main = loadInput >>= print . sum . zipWith (curry (\p -> fst p * score (snd p))) [1 ..] . sort . parse
+main = loadInput >>= print . sum . zipWith (curry (\p -> fst p * score (snd p))) [1 ..] . sort . map (\h -> Hand (cards h) (score h) (upgradeType h)) . parse
