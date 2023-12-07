@@ -1,6 +1,5 @@
 module Day7.Advanced where
 
-import Data.Char (isDigit)
 import Data.List (sort, sortOn)
 import qualified Data.Ord
 import Day7.Common (Hand (Hand), HandType (FiveOAK), findHandType, parse, score)
@@ -13,8 +12,7 @@ letterToInt 'K' = 13
 letterToInt 'Q' = 12
 letterToInt 'J' = 1
 letterToInt 'T' = 10
-letterToInt d | isDigit d = read [d] :: Int
-letterToInt d = error [d]
+letterToInt d = read [d] :: Int
 
 upgradeType :: Hand -> Hand
 upgradeType (Hand cards score typ)
