@@ -1,8 +1,8 @@
 module Day1.Advanced where
 
-import           Data.Char   (digitToInt, isDigit)
-import           Day1.Common (process)
-import           Utils.IO    (loadInput)
+import Data.Char (digitToInt, isDigit)
+import Day1.Common (process)
+import Utils.IO (loadInput)
 
 findDigits :: String -> [Int]
 findDigits ('o' : 'n' : 'e' : rest) = 1 : findDigits ("ne" ++ rest)
@@ -14,7 +14,7 @@ findDigits ('s' : 'i' : 'x' : rest) = 6 : findDigits ("ix" ++ rest)
 findDigits ('s' : 'e' : 'v' : 'e' : 'n' : rest) = 7 : findDigits ("even" ++ rest)
 findDigits ('e' : 'i' : 'g' : 'h' : 't' : rest) = 8 : findDigits ("ight" ++ rest)
 findDigits ('n' : 'i' : 'n' : 'e' : rest) = 9 : findDigits ("ine" ++ rest)
-findDigits (c:rest) = [digitToInt c | isDigit c] ++ findDigits rest
+findDigits (c : rest) = [digitToInt c | isDigit c] ++ findDigits rest
 findDigits _ = []
 
 main :: IO ()
