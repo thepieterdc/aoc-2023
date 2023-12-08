@@ -12,6 +12,9 @@ import Control.Monad (ap)
 import Data.List (group, sort, unfoldr)
 import Data.Maybe (listToMaybe)
 
+endsWith :: Eq a => a -> [a] -> Bool
+endsWith x = (== x) . last
+
 frequencies :: Ord a => [a] -> [(a, Int)]
 frequencies = map (head &&& length) . group . sort
 
