@@ -34,7 +34,7 @@ parseEdge = do
 
   return (origin, (left, right))
 
--- walk :: Navigation -> Int
+walk :: Navigation -> Int
 walk nav = walk' "AAA" (cycle (fst nav)) (snd nav)
   where
     turn :: Char -> (String, String) -> String
@@ -42,8 +42,8 @@ walk nav = walk' "AAA" (cycle (fst nav)) (snd nav)
     turn 'R' (_, r) = r
 
     walk' :: String -> String -> Network -> Int
-    walk' here (p : path) map | here == "ZZZ" = 0
-    walk' here (p : path) map = 1 + walk' (turn p $ fromJust $ Map.lookup here map) path map
+    walk' here _ _ | here == "ZZZ" = 0
+    walk' here (p : path) m = 1 + walk' (turn p $ fromJust $ Map.lookup here m) path m
 
 main :: IO ()
 main = loadInput >>= print . walk . parse
