@@ -4,6 +4,7 @@ import Utils.Parser
   ( Parser,
     digits,
     doParse,
+    eol,
     integer,
     some,
     string,
@@ -28,7 +29,7 @@ parseNumbers :: Parser [Int]
 parseNumbers = do parseMore <|> parseLast
   where
     parseMore = do whitespace; num <- integer; rest <- parseNumbers; return (num : rest)
-    parseLast = do whitespace; num <- integer; token '\n'; return [num]
+    parseLast = do whitespace; num <- integer; eol; return [num]
 
 solve :: ([Race] -> [Race]) -> String -> Int
 solve raceTf input = product $ map waysToWin $ raceTf $ parse input

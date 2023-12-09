@@ -8,6 +8,7 @@ import Utils.Parser
   ( Parser,
     digits,
     doParse,
+    eol,
     integer,
     some,
     string,
@@ -62,8 +63,8 @@ parseSeeds = do parseMore <|> parseLast
 parseTransforms :: Parser [Transform]
 parseTransforms = do parseMore <|> parseLast
   where
-    parseMore = do ds <- integer; whitespace; ss <- integer; whitespace; l <- integer; token '\n'; rest <- parseTransforms; return $ Transform ds (ds + l) ss (ss + l - 1) : rest
-    parseLast = do ds <- integer; whitespace; ss <- integer; whitespace; l <- integer; token '\n'; return [Transform ds (ds + l) ss (ss + l - 1)]
+    parseMore = do ds <- integer; whitespace; ss <- integer; whitespace; l <- integer; eol; rest <- parseTransforms; return $ Transform ds (ds + l) ss (ss + l - 1) : rest
+    parseLast = do ds <- integer; whitespace; ss <- integer; whitespace; l <- integer; eol; return [Transform ds (ds + l) ss (ss + l - 1)]
 
 progress :: [Transform] -> [SeedRange] -> [SeedRange]
 progress tfs ((start, end) : rest) = progress' applicableTfs (start, end) ++ progress tfs rest

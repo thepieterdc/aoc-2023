@@ -3,6 +3,7 @@ module Day2.Common where
 import Utils.Parser
   ( Parser,
     doParse,
+    eol,
     integer,
     some,
     string,
@@ -30,7 +31,7 @@ parse = doParse parser
     parser = do some parseGame
 
 parseGame :: Parser Game
-parseGame = do until ' '; id <- integer; token ':'; sets <- parseSets; token '\n'; return $ Game id sets
+parseGame = do until ' '; id <- integer; token ':'; sets <- parseSets; eol; return $ Game id sets
 
 parseSets :: Parser [Set]
 parseSets = parseMore <|> parseLast

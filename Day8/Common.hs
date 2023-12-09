@@ -4,7 +4,7 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe (fromJust)
 import Utils.IO (loadInput)
-import Utils.Parser (Parser, chars, doParse, some, string, token, until)
+import Utils.Parser (Parser, chars, doParse, eol, some, string, token, until)
 import Prelude hiding (until)
 
 type Network = Map String (String, String)
@@ -16,7 +16,7 @@ parse = doParse parser
   where
     parser = do
       insns <- until '\n'
-      token '\n'
+      eol
       network <- some parseEdge
       return (take (length insns - 1) insns, Map.fromList $ filter (not . looping) network)
       where
