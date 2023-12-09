@@ -3,7 +3,7 @@ module Day7.Common where
 import Data.List (sortOn)
 import qualified Data.Ord
 import Utils.Lists (frequencies)
-import Utils.Parser (Parser, chars, doParse, integer, some, token, whitespace)
+import Utils.Parser (Parser, chars, doParse, eol, integer, some, token, whitespace)
 
 type Card = Int
 
@@ -23,7 +23,7 @@ parse mappingFn = doParse parser
     parser = do some (parseHand mappingFn)
 
 parseHand :: (Char -> Int) -> Parser Hand
-parseHand mappingFn = do cs <- chars 5; whitespace; bet <- integer; token '\n'; return $ Hand (map mappingFn cs) bet (findHandType (map mappingFn cs))
+parseHand mappingFn = do cs <- chars 5; whitespace; bet <- integer; eol; return $ Hand (map mappingFn cs) bet (findHandType (map mappingFn cs))
 
 -- Functions
 

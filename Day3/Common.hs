@@ -4,7 +4,7 @@ import Data.Char (isDigit)
 import Data.Set (Set)
 import qualified Data.Set as Set
 import Utils.Grid (Coordinate)
-import Utils.Parser (Parser, digit, doParse, some, spot, token, (<|>))
+import Utils.Parser (Parser, digit, doParse, eol, some, spot, token, (<|>))
 
 data Item = Part String | Gear | Symbol | Skip deriving (Eq, Show)
 
@@ -16,7 +16,7 @@ parse = doParse parser
     parser = do some parseLine
 
 parseLine :: Parser Line
-parseLine = do items <- some parseItem; token '\n'; return items
+parseLine = do items <- some parseItem; eol; return items
 
 parseItem :: Parser Item
 parseItem = parsePart <|> parseGear <|> parseSymbol <|> parseSkip

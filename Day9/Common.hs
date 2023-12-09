@@ -15,7 +15,4 @@ parseSeq = parseMore <|> parseLast
 
 nextNumber :: [Int] -> Int
 nextNumber nums | all (== 0) nums = 0
-nextNumber nums = last nums + nextNumber diffs
-  where
-    -- Calculate the pairwise differences.
-    diffs = [(nums !! (i + 1)) - (nums !! i) | i <- [0 .. length nums - 2]]
+nextNumber nums = last nums + nextNumber (zipWith (-) (drop 1 nums) nums)

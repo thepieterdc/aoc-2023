@@ -5,7 +5,7 @@
 -- License     : MIT
 --
 -- Contains methods to parse strings into usable structures.
-module Utils.Parser (Parser, char, chars, digit, digits, doParse, end, guard, integer, many, optional, some, spot, string, token, until, whitespace, (<|>)) where
+module Utils.Parser (Parser, char, chars, digit, digits, doParse, end, eol, guard, integer, many, optional, some, spot, string, token, until, whitespace, (<|>)) where
 
 import Control.Applicative (Alternative, empty, many, some, (<|>))
 import Control.Monad
@@ -103,6 +103,10 @@ digit = spot isDigit
 -- | Parses multiple digits into a String.
 digits :: Parser String
 digits = some digit
+
+-- | Matches the end of a line.
+eol :: Parser ()
+eol = token '\n'
 
 -- | Matches the end of the file.
 end :: Parser ()

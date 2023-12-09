@@ -12,9 +12,11 @@ import Control.Monad (ap)
 import Data.List (group, sort, unfoldr)
 import Data.Maybe (listToMaybe)
 
+-- | Validates whether a given list ends with the given element.
 endsWith :: Eq a => a -> [a] -> Bool
 endsWith x = (== x) . last
 
+-- | Calculates a list of tuples containing the frequencies of each element.
 frequencies :: Ord a => [a] -> [(a, Int)]
 frequencies = map (head &&& length) . group . sort
 

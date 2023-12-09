@@ -6,6 +6,7 @@ import Utils.Parser
   ( Parser,
     digits,
     doParse,
+    eol,
     some,
     string,
     token,
@@ -31,7 +32,7 @@ parseDraw = do
   result <- parseNumbers
   string " |"
   bet <- parseNumbers
-  token '\n'
+  eol
   return $ Card $ Set.size (Set.intersection bet result)
 
 parseNumbers :: Parser (Set String)
