@@ -25,6 +25,10 @@ chebyshevNeighbours (x, y) = Set.fromList [(x - 1, y - 1), (x - 1, y), (x - 1, y
 euclideanNeighbours :: Coordinate -> Set Coordinate
 euclideanNeighbours (x, y) = Set.fromList [(x - 1, y), (x, y + 1), (x + 1, y), (x, y - 1)]
 
+-- | Calculates the Manhattan distance between two coordinates.
+manhattan :: Coordinate -> Coordinate -> Int
+manhattan (x1, y1) (x2, y2) = abs (x1 - x2) + abs (y1 - y2)
+
 -- | Gets whether two coordinates are orthogonally placed.
 --   If both coordinates are equal, they are considered orthogonal.
 orthogonal :: Coordinate -> Coordinate -> Bool
