@@ -4,11 +4,13 @@
 -- Copyright   : (c) Pieter De Clercq, 2023
 -- License     : MIT
 --
--- Contains methods to parse strings into usable structures.
-module Utils.Statistics (combinations) where
+-- Contains methods to handle statistical operations.
+module Utils.Statistics (choose) where
 
 import Data.List (subsequences)
 
 -- | Generates the combinations of k elements from a set of n elements.
-combinations :: Int -> [a] -> [[a]]
-combinations k ns = filter (\x -> length x == k) $ subsequences ns
+choose :: Int -> [a] -> [[a]]
+choose 0 _ = [[]]
+choose _ [] = []
+choose k (x : xs) = map (x :) (choose (k - 1) xs) ++ choose k xs

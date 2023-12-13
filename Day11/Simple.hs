@@ -5,7 +5,7 @@ import Data.Set (Set)
 import qualified Data.Set as Set
 import Utils.Grid (Coordinate, manhattan)
 import Utils.IO (loadInput)
-import Utils.Statistics (combinations)
+import Utils.Statistics (choose)
 
 expand :: ((Int, Int) -> Int) -> (Int -> (Int, Int) -> (Int, Int)) -> [Coordinate] -> [Coordinate]
 expand find tf glxs = map (\p -> tf (emptyBefore (find p)) p) glxs
@@ -27,7 +27,7 @@ parse :: String -> [Coordinate]
 parse file = [(r, c) | (r, row) <- zip [0 ..] $ lines file, (c, v) <- zip [0 ..] row, v == '#']
 
 sums :: [Coordinate] -> Int
-sums coordinates = length $ combinations 2 coordinates
+sums coordinates = sum $ map (\c -> manhattan (head c) (last c)) $ choose 2 coordinates
 
 main :: IO ()
 main = loadInput >>= print . sums . expandCols . expandRows . parse
