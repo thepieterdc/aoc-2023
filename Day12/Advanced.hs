@@ -12,4 +12,4 @@ expand record = Record cs bs
     bs = concat $ replicate 5 $ brokens record
 
 main :: IO ()
-main = loadInput >>= print . map (solutions . expand) . parse
+main = loadInput >>= print . sum . map (solutions . expand) . parse
