@@ -1,6 +1,7 @@
 module Day12.Simple where
 
 import Utils.IO (loadInput)
+import Utils.Lists (maybeHead)
 import Utils.Parser (Parser, doParse, eol, integer, some, token, (<|>))
 
 data Condition = Ok | Broken | Unknown deriving (Eq, Show)
@@ -32,20 +33,24 @@ parseRecord = do
 -- solutions :: Record -> Int
 solutions record = solutions' (conditions record) (brokens record)
   where
-    solutions' :: [Condition] -> [Int] -> Int
+    -- solutions' :: [Condition] -> [Int] -> Int
     -- Fully solved.
     solutions' [] [] = 1
-    -- Still broken conditions, but no more broken springs: invalid solution.
-    solutions' cs [] | Broken `elem` cs = 0
+    -- No more broken springs, valid solution if there are no more broken conditions either.
+    solutions' cs [] = if Broken `notElem` cs then 1 else 0
+    -- No more conditions, but still broken springs: invalid solution.
+    solutions' [] bs = 0
     -- Advance through an Ok condition.
     solutions' (c : cs) bs | c == Ok = solutions' cs bs
-    -- Explore an Unknown condition.
-    solutions' allCs@(c : cs) allBs@(b : bs) = startHere + startLater
+    -- Explore a Broken/Unknown condition.
+    solutions' allCs@(c : cs) allBs@(b : bs) | c /= Ok = startHere + startLater
       where
-        startHere = if notElem Ok testGroup && length testGroup == b then solutions' rest bs else 0
+        startHere = if length testGroup == b && notElem Ok testGroup && maybeHead endMarker /= Just Broken then solutions' next bs else 0
           where
-            (testGroup, rest) = splitAt 3 allCs
+            (testGroup, rest) = splitAt b allCs
+            (endMarker, next) = splitAt 1 rest
         startLater = if c == Unknown then solutions' cs allBs else 0
+    solutions' cs bs = error (show cs ++ show bs)
 
 main :: IO ()
-main = loadInput >>= print . solutions . head . parse
+main = loadInput >>= print . sum . map solutions . parse
