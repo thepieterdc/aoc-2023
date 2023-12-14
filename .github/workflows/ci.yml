@@ -22,7 +22,7 @@ jobs:
     container:
       env:
         STACK_ROOT: /root/.stack
-      image: haskell:9.4.2-slim
+      image: haskell:9.4.8-slim
 
     strategy:
       matrix:
