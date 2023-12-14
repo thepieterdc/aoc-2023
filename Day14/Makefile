@@ -14,7 +14,7 @@ run-simple:
 
 pretest:
 	mkdir -p test/
-	stack install split
+	stack install --allow-different-user split
 
 test: test-advanced test-simple
 
