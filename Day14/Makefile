@@ -14,7 +14,7 @@ run-simple:
 
 pretest:
 	mkdir -p test/
-	stack install split
+	stack install --system-ghc split
 
 test: test-advanced test-simple
 
