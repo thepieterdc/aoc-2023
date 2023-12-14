@@ -21,7 +21,7 @@ jobs:
 
     container:
       env:
-        STACK_ROOT: /tmp/stack
+        STACK_ROOT: /root/.stack
       image: haskell:9.4.2-slim
 
     strategy:
