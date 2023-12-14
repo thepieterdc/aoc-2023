@@ -14,7 +14,8 @@ run-simple:
 
 pretest:
 	mkdir -p test/
-	stack install --system-ghc split
+	cabal update
+	cabal install --lib split
 
 test: test-advanced test-simple
 
