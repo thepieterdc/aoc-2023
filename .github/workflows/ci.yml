@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
+      env:
+        STACK_ROOT: /tmp/stack
       image: haskell:9.4.2-slim
 
     strategy:
@@ -27,8 +29,8 @@ jobs:
         dir: ${{ fromJson(needs.get-all-days.outputs.matrix) }}
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - run: make test
-      working-directory: ${{ matrix.dir }}
+      - run: make test
+        working-directory: ${{ matrix.dir }}
