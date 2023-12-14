@@ -6,14 +6,21 @@ import Data.Maybe (fromJust, isJust)
 import Day14.Common (Grid, Rock (..), parse, score, tiltEast, tiltNorth, tiltSouth, tiltWest)
 import Utils.IO (loadInput)
 
--- run :: Int -> [Int] -> Map String Int -> Grid -> Int
-run 0 lastFourScores _ grid = lastFourScores
-run times lastFourScores cache grid = if isJust fromCache then run (fromJust fromCache - times - 1) [] Map.empty cycledGrid else run (times - 1) (thisScore : take 3 lastFourScores) updatedCache cycledGrid
+cycleGrid :: Grid -> Grid
+cycleGrid grid = tiltEast $ tiltSouth $ tiltWest $ tiltNorth grid
+
+run :: Int -> [Int] -> Map [Int] Int -> Grid -> Int
+run 0 _ _ grid = score grid
+run 1 _ _ grid = score $ cycleGrid grid
+run left lastTenScores cache grid = if isJust cacheHit then run (left `mod` (fromJust cacheHit - (left - 1))) [] cache' cycled else run (left - 1) cacheKey cache' cycled
   where
-    cycledGrid = tiltEast $ tiltSouth $ tiltWest $ tiltNorth grid
-    thisScore = score cycledGrid
-    fromCache = Map.lookup (show lastFourScores ++ show thisScore) cache
-    updatedCache = Map.insert (show lastFourScores ++ show thisScore) times cache
+    cycled = cycleGrid grid
+    thisScore = score cycled
+    cacheKey = thisScore : take 9 lastTenScores
+    cacheHit = Map.lookup cacheKey cache
+    cache' = Map.insert cacheKey (left - 1) cache
 
 main :: IO ()
-main = loadInput >>= print . run 1000000 [] Map.empty . parse
+main = loadInput >>= print . run (1000000000 - 2) [] Map.empty . parse
+
+--
