@@ -7,8 +7,8 @@ import Utils.IO (loadInput)
 merge :: [Race] -> Race
 merge races = Race times distances
   where
-    times = read (intercalate "" $ map (show . time) races) :: Int
-    distances = read (intercalate "" $ map (show . distance) races) :: Int
+    times = read (intercalate "" $ map (show . time) races)
+    distances = read (intercalate "" $ map (show . distance) races)
 
 main :: IO ()
 main = loadInput >>= print . solve (\rs -> [merge rs])

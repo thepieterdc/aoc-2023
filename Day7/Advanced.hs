@@ -12,7 +12,7 @@ letterToInt 'K' = 13
 letterToInt 'Q' = 12
 letterToInt 'J' = 1
 letterToInt 'T' = 10
-letterToInt d = read [d] :: Int
+letterToInt d = read [d]
 
 upgradeType :: Hand -> Hand
 upgradeType (Hand cards score typ)
