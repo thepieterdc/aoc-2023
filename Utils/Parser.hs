@@ -119,8 +119,8 @@ end = Parser f
 integer :: Parser Int
 integer = positive <|> negative
   where
-    positive = do d <- digits; return (read d :: Int)
-    negative = do token '-'; d <- digits; return (-read d :: Int)
+    positive = do read <$> digits
+    negative = do token '-'; d <- digits; return (-read d)
 
 -- | Attempts to parse a String that might be absent.
 optional :: String -> Parser String

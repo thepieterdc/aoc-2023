@@ -9,7 +9,7 @@ import Utils.IO (loadInput)
 splitSymbols :: Set Coordinate -> [([Coordinate], Int)] -> [(Coordinate, Coordinate, Item)] -> (Set Coordinate, [([Coordinate], Int)])
 splitSymbols symbols parts ((start, end, Gear) : rest) = splitSymbols (Set.insert start symbols) parts rest
 splitSymbols symbols parts ((start, end, Symbol) : rest) = splitSymbols (Set.insert start symbols) parts rest
-splitSymbols symbols parts (((row, startCol), (_, endCol), Part num) : rest) = splitSymbols symbols (parts ++ [([(row, c) | c <- [startCol .. endCol]], read num :: Int)]) rest
+splitSymbols symbols parts (((row, startCol), (_, endCol), Part num) : rest) = splitSymbols symbols (parts ++ [([(row, c) | c <- [startCol .. endCol]], read num)]) rest
 splitSymbols symbols parts [] = (symbols, parts)
 
 sumParts :: Set Coordinate -> [([Coordinate], Int)] -> [Int]

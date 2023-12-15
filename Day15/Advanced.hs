@@ -24,16 +24,14 @@ parse s
     parts = splitOn "=" s
 
 process :: Map Int [Lens] -> Operation -> Map Int [Lens]
-process m (Add lbl len) = Map.insert box updatedBox m
+process m (Add lbl len) = process' m lbl (addToBox (lbl, len))
+process m (Remove lbl) = process' m lbl (filter (\lens -> fst lens /= lbl))
+
+process' :: Map Int [Lens] -> String -> ([Lens] -> [Lens]) -> Map Int [Lens]
+process' m label tf = Map.insert box (tf boxContents) m
   where
-    box = hash lbl
+    box = hash label
     boxContents = Map.findWithDefault [] box m
-    updatedBox = addToBox (lbl, len) boxContents
-process m (Remove lbl) = Map.insert box updatedBox m
-  where
-    box = hash lbl
-    boxContents = Map.findWithDefault [] box m
-    updatedBox = [(lbl', len') | (lbl', len') <- boxContents, lbl' /= lbl]
 
 score :: [(Int, [Lens])] -> Int
 score boxes = sum $ map (\box -> sum (zipWith (curry (\pl -> (fst box + 1) * fst pl * snd (snd pl))) [1 ..] (snd box))) boxes
