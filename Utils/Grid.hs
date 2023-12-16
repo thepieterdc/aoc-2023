@@ -13,6 +13,9 @@ import qualified Data.Set as Set
 -- | A coordinate defined as a pair of (x, y)
 type Coordinate = (Int, Int)
 
+-- | A direction in a 2D plane.
+data Direction = East | North | South | West deriving (Eq, Ord, Show)
+
 -- | Calculates the Chebyshev distance between two coordinates.
 chebyshev :: Coordinate -> Coordinate -> Int
 chebyshev (x1, y1) (x2, y2) = maximum $ map abs [x1 - x2, y1 - y2]
