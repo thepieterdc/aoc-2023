@@ -3,19 +3,26 @@ module Day16.Common where
 import Data.Set (Set)
 import qualified Data.Set as Set
 import Utils.Filtering (countWhere)
-import Utils.Grid (Coordinate, Direction (..))
+import Utils.Grid (Coordinate, Direction (..), Grid, inBounds)
 
 data Mirror = Backward | Forward | SplitH | SplitV deriving (Eq, Show)
 
-type Grid = [[([Direction], Maybe Mirror)]]
-
-count :: Grid -> Int
+count :: Grid ([Direction], Maybe Mirror) -> Int
 count = foldr ((+) . countWhere (not . null . fst)) 0
 
-mark :: Direction -> Coordinate -> Grid -> Grid
+encode :: ([Direction], Maybe Mirror) -> Char
+encode (dirs, _)
+  | length dirs > 1 = head $ show dirs
+  | null dirs = '.'
+  | head dirs == East = '>'
+  | head dirs == North = '^'
+  | head dirs == South = 'v'
+  | head dirs == West = '<'
+
+mark :: Direction -> Coordinate -> Grid ([Direction], Maybe Mirror) -> Grid ([Direction], Maybe Mirror)
 mark d (r, c) grid = take r grid ++ [take c (grid !! r) ++ [([d], snd $ grid !! r !! c)] ++ drop (c + 1) (grid !! r)] ++ drop (r + 1) grid
 
-parse :: String -> Grid
+parse :: String -> Grid ([Direction], Maybe Mirror)
 parse input = map (map (\c -> ([], parse' c))) $ lines input
   where
     parse' :: Char -> Maybe Mirror
@@ -51,28 +58,12 @@ reflect (r, c) South (Just Backward) = [((r, c + 1), East)]
 reflect (r, c) West (Just Backward) = [((r - 1, c), North)]
 reflect (r, c) d m = error $ show (r, c) ++ " " ++ show d ++ " " ++ show m
 
-render :: Grid -> IO ()
-render g = mapM_ putStrLn $ render' g
-  where
-    render' :: Grid -> [String]
-    render' (r : rs) = map (encode . fst) r : render' rs
-      where
-        encode :: [Direction] -> Char
-        encode ls
-          | length ls > 1 = head $ show ls
-          | null ls = '.'
-          | head ls == East = '>'
-          | head ls == North = '^'
-          | head ls == South = 'v'
-          | head ls == West = '<'
-    render' [] = []
-
-walk :: Set (Coordinate, Direction) -> Grid -> Grid
+walk :: Set (Coordinate, Direction) -> Grid ([Direction], Maybe Mirror) -> Grid ([Direction], Maybe Mirror)
 walk q grid
   | Set.null q = grid
   | otherwise = if alreadyMarked then walk q' grid else walk (Set.union q' nextPositions) marked
   where
     (((r, c), d), q') = Set.deleteFindMin q
     alreadyMarked = d `elem` fst (grid !! r !! c)
-    nextPositions = Set.fromList [((r', c'), d') | ((r', c'), d') <- reflect (r, c) d (snd $ grid !! r !! c), r' >= 0, r' < length grid, c' >= 0, c' < length (grid !! r'), d' `notElem` fst (grid !! r' !! c')]
+    nextPositions = Set.fromList [((r', c'), d') | ((r', c'), d') <- reflect (r, c) d (snd $ grid !! r !! c), inBounds grid (r', c'), d' `notElem` fst (grid !! r' !! c')]
     marked = mark d (r, c) grid
