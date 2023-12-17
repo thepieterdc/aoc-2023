@@ -1,10 +1,10 @@
 all: clean test-advanced test-simple
 
 compile-advanced:
-	cd ../; ghc -funfolding-use-threshold=16 -O2 -optc-O3 -main-is Day__day__.Advanced.main -o Day__day__/advanced Day__day__/Advanced.hs
+	cd ../; ghc -funfolding-use-threshold=16 -O2 -optc-O3 -main-is Day__day__.Advanced.main -o Day__day__/advanced Day__day__/Advanced.hs 1>&2
 
 compile-simple:
-	cd ../; ghc -funfolding-use-threshold=16 -O2 -optc-O3 -main-is Day__day__.Simple.main -o Day__day__/simple Day__day__/Simple.hs
+	cd ../; ghc -funfolding-use-threshold=16 -O2 -optc-O3 -main-is Day__day__.Simple.main -o Day__day__/simple Day__day__/Simple.hs 1>&2
 
 dev-advanced:
 	cd ../; ghcid Day__day__/Advanced.hs --setup ":set args Day__day__/input/advanced-example.txt" --test main
