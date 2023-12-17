@@ -2,7 +2,7 @@ module Day10.Common where
 
 import Data.Set (Set)
 import qualified Data.Set as Set
-import Utils.Grid (Coordinate, Grid, euclideanNeighbours, inBounds)
+import Utils.Grid (Coordinate, Grid, euclideanNeighbours, get, inBounds)
 import Utils.IO (loadInput)
 import Utils.Lists (mapIdx)
 import Utils.Parser (Parser, doParse, eol, some, token, (<|>))
@@ -66,10 +66,10 @@ replacedGrids :: Grid Tile -> [(Tile, Grid Tile)]
 replacedGrids grid = map (\t -> (t, replaceStart start t grid)) validCandidates
   where
     start = findStart 0 grid
-    valid (r, c) = inBounds grid (r, c) && (r, c) /= start && grid !! r !! c /= Ground
+    valid coord = inBounds grid coord && coord /= start && get grid coord /= Ground
 
     candidates = [(supportedConnectors start t, t) | t <- [BendNE, BendNW, BendSE, BendSW, Horizontal, Vertical]]
-    validCandidates = [t | ((((lr, lc), lefts), ((rr, rc), rights)), t) <- candidates, valid (lr, lc), valid (rr, rc), Set.member (grid !! lr !! lc) lefts, Set.member (grid !! rr !! rc) rights]
+    validCandidates = [t | (((l, lefts), (r, rights)), t) <- candidates, valid l, valid r, Set.member (get grid l) lefts, Set.member (get grid r) rights]
 
 replaceStart :: Coordinate -> Tile -> Grid Tile -> Grid Tile
 replaceStart (r, c) t = mapIdx r (mapIdx c (const t))
@@ -95,12 +95,12 @@ walk :: Grid Tile -> Coordinate -> Coordinate -> Coordinate -> [Coordinate]
 walk grid origin previous here
   | wrong = []
   | done = [here]
-  | otherwise = here : walk grid origin here (nr, nc)
+  | otherwise = here : walk grid origin here target
   where
     -- Get the tile at the current coordinate
-    tile = grid !! fst here !! snd here
+    tile = get grid here
     -- Move to the next coordinate
-    (nr, nc) = move previous here tile
+    target = move previous here tile
     -- Validate if the next coordinate is valid
-    wrong = (nr, nc) == here
-    done = (nr, nc) == here || (nr, nc) == origin || not (inBounds grid (nr, nc))
+    wrong = target == here
+    done = target == here || target == origin || not (inBounds grid target)

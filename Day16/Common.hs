@@ -3,7 +3,7 @@ module Day16.Common where
 import Data.Set (Set)
 import qualified Data.Set as Set
 import Utils.Filtering (countWhere)
-import Utils.Grid (Coordinate, Direction (..), Grid, inBounds, mapCoordinate)
+import Utils.Grid (Coordinate, Direction (..), Grid, get, inBounds, mapCoordinate)
 
 data Mirror = Backward | Forward | SplitH | SplitV deriving (Eq, Show)
 
@@ -60,7 +60,7 @@ walk q grid
   | Set.null q = grid
   | otherwise = if alreadyMarked then walk q' grid else walk (Set.union q' nextPositions) marked
   where
-    (((r, c), d), q') = Set.deleteFindMin q
-    alreadyMarked = d `elem` fst (grid !! r !! c)
-    nextPositions = Set.fromList [((r', c'), d') | ((r', c'), d') <- reflect (r, c) d (snd $ grid !! r !! c), inBounds grid (r', c'), d' `notElem` fst (grid !! r' !! c')]
-    marked = mapCoordinate (\v -> ([d], snd v)) grid (r, c)
+    ((coord, d), q') = Set.deleteFindMin q
+    alreadyMarked = d `elem` fst (get grid coord)
+    nextPositions = Set.fromList [(coord', d') | (coord', d') <- reflect coord d (snd $ get grid coord), inBounds grid coord', d' `notElem` fst (get grid coord')]
+    marked = mapCoordinate (\v -> ([d], snd v)) grid coord
