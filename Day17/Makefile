@@ -13,10 +13,10 @@ dev-simple:
 	cd ../; ghcid Day17/Simple.hs --setup ":set args Day17/input/simple-example.txt" --test main
 
 run-advanced: compile-advanced
-	cd ../; ./advanced Day17/input/advanced.txt
+	./advanced input/advanced.txt
 
 run-simple: compile-simple
-	cd ../; ./simple Day17/input/simple.txt
+	./simple input/simple.txt
 
 pretest:
 	mkdir -p test/

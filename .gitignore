@@ -286,5 +286,5 @@ test/*.log
 docs/
 
 # Executables
-./advanced
-./simple
+Day*/advanced
+Day*/simple
