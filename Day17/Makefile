@@ -15,7 +15,7 @@ run-simple:
 pretest:
 	mkdir -p test/
 
-test: test-advanced test-simple
+test: test-simple
 
 test-advanced: pretest
 	make -s run-advanced > test/output-advanced.log

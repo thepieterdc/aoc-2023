@@ -1,11 +1,11 @@
 module Day16.Advanced where
 
 import qualified Data.Set as Set
-import Day16.Common (Grid, count, parse, walk)
-import Utils.Grid (Coordinate, Direction (..))
+import Day16.Common (Mirror, count, parse, walk)
+import Utils.Grid (Coordinate, Direction (..), Grid)
 import Utils.IO (loadInput)
 
-run :: Grid -> Int
+run :: Grid ([Direction], Maybe Mirror) -> Int
 run grid = foldr (\s m -> max m $ count $ walk (Set.singleton s) grid) 0 starts
   where
     cols = length $ head grid
