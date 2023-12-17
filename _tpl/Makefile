@@ -1,7 +1,7 @@
 all: clean test-advanced test-simple
 
 compile-advanced:
-	cd ../; ghc -funfolding-use-threshold=16 -O2 -optc-O3 ghc -main-is Day__day__.Advanced.main -o Day__day__/advanced Day__day__/Advanced.hs
+	cd ../; ghc -funfolding-use-threshold=16 -O2 -optc-O3 -main-is Day__day__.Advanced.main -o Day__day__/advanced Day__day__/Advanced.hs
 
 compile-simple:
 	cd ../; ghc -funfolding-use-threshold=16 -O2 -optc-O3 -main-is Day__day__.Simple.main -o Day__day__/simple Day__day__/Simple.hs
@@ -20,6 +20,8 @@ run-simple: compile-simple
 
 pretest:
 	mkdir -p test/
+
+profile-simple:
 
 test: test-advanced test-simple
 
