@@ -3,7 +3,7 @@ module Day16.Common where
 import Data.Set (Set)
 import qualified Data.Set as Set
 import Utils.Filtering (countWhere)
-import Utils.Grid (Coordinate, Direction (..), Grid, inBounds)
+import Utils.Grid (Coordinate, Direction (..), Grid, inBounds, mapCoordinate)
 
 data Mirror = Backward | Forward | SplitH | SplitV deriving (Eq, Show)
 
@@ -18,9 +18,6 @@ encode (dirs, _)
   | head dirs == North = '^'
   | head dirs == South = 'v'
   | head dirs == West = '<'
-
-mark :: Direction -> Coordinate -> Grid ([Direction], Maybe Mirror) -> Grid ([Direction], Maybe Mirror)
-mark d (r, c) grid = take r grid ++ [take c (grid !! r) ++ [([d], snd $ grid !! r !! c)] ++ drop (c + 1) (grid !! r)] ++ drop (r + 1) grid
 
 parse :: String -> Grid ([Direction], Maybe Mirror)
 parse input = map (map (\c -> ([], parse' c))) $ lines input
@@ -66,4 +63,4 @@ walk q grid
     (((r, c), d), q') = Set.deleteFindMin q
     alreadyMarked = d `elem` fst (grid !! r !! c)
     nextPositions = Set.fromList [((r', c'), d') | ((r', c'), d') <- reflect (r, c) d (snd $ grid !! r !! c), inBounds grid (r', c'), d' `notElem` fst (grid !! r' !! c')]
-    marked = mark d (r, c) grid
+    marked = mapCoordinate (\v -> ([d], snd v)) grid (r, c)

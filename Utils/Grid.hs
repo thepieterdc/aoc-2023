@@ -39,6 +39,10 @@ inBounds grid (r, c) = r >= 0 && c >= 0 && r < length grid && c < length (grid !
 manhattan :: Coordinate -> Coordinate -> Int
 manhattan (x1, y1) (x2, y2) = abs (x1 - x2) + abs (y1 - y2)
 
+-- | Modifies the element in the given position on the grid.
+mapCoordinate :: (a -> a) -> Grid a -> Coordinate -> Grid a
+mapCoordinate modif grid (r, c) = take r grid ++ [take c (grid !! r) ++ [modif $ grid !! r !! c] ++ drop (c + 1) (grid !! r)] ++ drop (r + 1) grid
+
 -- | Gets whether two coordinates are orthogonally placed.
 --   If both coordinates are equal, they are considered orthogonal.
 orthogonal :: Coordinate -> Coordinate -> Bool
