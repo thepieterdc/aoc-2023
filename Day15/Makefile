@@ -1,16 +1,22 @@
 all: clean test-advanced test-simple
 
+compile-advanced:
+	cd ../; ghc -funfolding-use-threshold=16 -O2 -optc-O3 -main-is Day15.Advanced.main -o Day15/advanced Day15/Advanced.hs 1>&2
+
+compile-simple:
+	cd ../; ghc -funfolding-use-threshold=16 -O2 -optc-O3 -main-is Day15.Simple.main -o Day15/simple Day15/Simple.hs 1>&2
+
 dev-advanced:
 	cd ../; ghcid Day15/Advanced.hs --setup ":set args Day15/input/advanced-example.txt" --test main
 
 dev-simple:
 	cd ../; ghcid Day15/Simple.hs --setup ":set args Day15/input/simple-example.txt" --test main
 
-run-advanced:
-	cd ../; runhaskell Day15/Advanced.hs Day15/input/advanced.txt
+run-advanced: compile-advanced
+	./advanced input/advanced.txt
 
-run-simple:
-	cd ../; runhaskell Day15/Simple.hs Day15/input/simple.txt
+run-simple: compile-simple
+	./simple input/simple.txt
 
 pretest:
 	mkdir -p test/

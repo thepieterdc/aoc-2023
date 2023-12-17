@@ -4,10 +4,11 @@ import Data.Function (on)
 import Data.List (maximumBy)
 import Data.Ord (compare)
 import qualified Data.Set as Set
-import Day10.Common (Grid, Tile (..), findStart, parse, replacedGrids, startPrevious, walk)
+import Day10.Common (Tile (..), findStart, parse, replacedGrids, startPrevious, walk)
+import Utils.Grid (Grid)
 import Utils.IO (loadInput)
 
-countInside :: Grid -> Int
+countInside :: Grid Tile -> Int
 countInside grid = sum $ map (fst . (\r -> foldl (detectInside r) (0, False) (zip [0 ..] r)) . filter (/= Horizontal)) grid
   where
     detectInside :: [Tile] -> (Int, Bool) -> (Int, Tile) -> (Int, Bool)
@@ -17,7 +18,7 @@ countInside grid = sum $ map (fst . (\r -> foldl (detectInside r) (0, False) (zi
     detectInside _ (cnt, inside) (_, Vertical) = (cnt, not inside)
     detectInside _ (cnt, inside) _ = (cnt, inside)
 
-solve :: Grid -> Int
+solve :: Grid Tile -> Int
 solve grid = countInside cleansedGrid
   where
     start@(sr, sc) = findStart 0 grid

@@ -2,16 +2,14 @@ module Day10.Common where
 
 import Data.Set (Set)
 import qualified Data.Set as Set
-import Utils.Grid (Coordinate, euclideanNeighbours)
+import Utils.Grid (Coordinate, Grid, euclideanNeighbours, get, inBounds)
 import Utils.IO (loadInput)
 import Utils.Lists (mapIdx)
 import Utils.Parser (Parser, doParse, eol, some, token, (<|>))
 
 data Tile = BendNE | BendNW | BendSE | BendSW | Ground | Horizontal | Start | Vertical deriving (Eq, Ord, Show)
 
-type Grid = [[Tile]]
-
-parse :: String -> Grid
+parse :: String -> Grid Tile
 parse = doParse parser
   where
     parseRow = do ts <- some parseTile; eol; return ts
@@ -29,7 +27,7 @@ parseTile = bendNE <|> bendNW <|> bendSE <|> bendSW <|> ground <|> horiz <|> sta
     start = do token 'S'; return Start
     vert = do token '|'; return Vertical
 
-findStart :: Int -> Grid -> Coordinate
+findStart :: Int -> Grid Tile -> Coordinate
 findStart r (row : rows) = result
   where
     matches = [c | (c, t) <- zip [0 ..] row, t == Start]
@@ -64,19 +62,16 @@ move (prevR, prevC) (r, c) Vertical
   | otherwise = (r, c)
 move prev c tile = error (show tile ++ show prev ++ show c)
 
-onGrid :: Grid -> Coordinate -> Bool
-onGrid grid (r, c) = r >= 0 && r < length grid && c >= 0 && c < length (head grid)
-
-replacedGrids :: Grid -> [(Tile, Grid)]
+replacedGrids :: Grid Tile -> [(Tile, Grid Tile)]
 replacedGrids grid = map (\t -> (t, replaceStart start t grid)) validCandidates
   where
     start = findStart 0 grid
-    valid (r, c) = onGrid grid (r, c) && (r, c) /= start && grid !! r !! c /= Ground
+    valid coord = inBounds grid coord && coord /= start && get grid coord /= Ground
 
     candidates = [(supportedConnectors start t, t) | t <- [BendNE, BendNW, BendSE, BendSW, Horizontal, Vertical]]
-    validCandidates = [t | ((((lr, lc), lefts), ((rr, rc), rights)), t) <- candidates, valid (lr, lc), valid (rr, rc), Set.member (grid !! lr !! lc) lefts, Set.member (grid !! rr !! rc) rights]
+    validCandidates = [t | (((l, lefts), (r, rights)), t) <- candidates, valid l, valid r, Set.member (get grid l) lefts, Set.member (get grid r) rights]
 
-replaceStart :: Coordinate -> Tile -> Grid -> Grid
+replaceStart :: Coordinate -> Tile -> Grid Tile -> Grid Tile
 replaceStart (r, c) t = mapIdx r (mapIdx c (const t))
 
 startPrevious :: Coordinate -> Tile -> Coordinate
@@ -96,16 +91,16 @@ supportedConnectors (r, c) BendSW = (((r + 1, c), Set.fromList [BendNE, BendNW, 
 supportedConnectors (r, c) Horizontal = (((r, c - 1), Set.fromList [BendNE, BendSE, Horizontal]), ((r, c + 1), Set.fromList [BendNW, BendSW, Horizontal]))
 supportedConnectors (r, c) Vertical = (((r - 1, c), Set.fromList [BendSE, BendSW, Vertical]), ((r + 1, c), Set.fromList [BendNE, BendNW, Vertical]))
 
-walk :: Grid -> Coordinate -> Coordinate -> Coordinate -> [Coordinate]
+walk :: Grid Tile -> Coordinate -> Coordinate -> Coordinate -> [Coordinate]
 walk grid origin previous here
   | wrong = []
   | done = [here]
-  | otherwise = here : walk grid origin here (nr, nc)
+  | otherwise = here : walk grid origin here target
   where
     -- Get the tile at the current coordinate
-    tile = grid !! fst here !! snd here
+    tile = get grid here
     -- Move to the next coordinate
-    (nr, nc) = move previous here tile
+    target = move previous here tile
     -- Validate if the next coordinate is valid
-    wrong = (nr, nc) == here
-    done = (nr, nc) == here || (nr, nc) == origin || nr < 0 || nr >= length grid || nc < 0 || nc >= length (head grid)
+    wrong = target == here
+    done = target == here || target == origin || not (inBounds grid target)
