@@ -6,7 +6,6 @@ compile-advanced:
 compile-simple:
 	cd ../; ghc -funfolding-use-threshold=16 -O2 -optc-O3 -main-is Day15.Simple.main -o Day15/simple Day15/Simple.hs 1>&2
 
-
 dev-advanced:
 	cd ../; ghcid Day15/Advanced.hs --setup ":set args Day15/input/advanced-example.txt" --test main
 

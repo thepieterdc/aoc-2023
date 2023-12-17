@@ -22,5 +22,3 @@ run left lastTenScores cache grid = if isJust cacheHit then run (left `mod` (fro
 
 main :: IO ()
 main = loadInput >>= print . run (1000000000 - 2) [] Map.empty . parse
-
---
