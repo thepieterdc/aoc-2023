@@ -1,4 +1,4 @@
-module Day14.Simple where
+module Day14.Advanced where
 
 import Data.Map (Map)
 import qualified Data.Map as Map (adjustWithKey, empty, insert, lookup)
