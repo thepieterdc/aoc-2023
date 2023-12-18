@@ -3,13 +3,14 @@ module Day14.Advanced where
 import Data.Map (Map)
 import qualified Data.Map as Map (adjustWithKey, empty, insert, lookup)
 import Data.Maybe (fromJust, isJust)
-import Day14.Common (Grid, Rock (..), parse, score, tiltEast, tiltNorth, tiltSouth, tiltWest)
+import Day14.Common (Rock (..), parse, score, tiltEast, tiltNorth, tiltSouth, tiltWest)
+import Utils.Grid (Grid)
 import Utils.IO (loadInput)
 
-cycleGrid :: Grid -> Grid
+cycleGrid :: Grid (Maybe Rock) -> Grid (Maybe Rock)
 cycleGrid grid = tiltEast $ tiltSouth $ tiltWest $ tiltNorth grid
 
-run :: Int -> [Int] -> Map [Int] Int -> Grid -> Int
+run :: Int -> [Int] -> Map [Int] Int -> Grid (Maybe Rock) -> Int
 run 0 _ _ grid = score grid
 run 1 _ _ grid = score $ cycleGrid grid
 run left lastTenScores cache grid = if isJust cacheHit then run (left `mod` (fromJust cacheHit - (left - 1))) [] cache' cycled else run (left - 1) cacheKey cache' cycled

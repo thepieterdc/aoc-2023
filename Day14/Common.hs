@@ -3,17 +3,16 @@ module Day14.Common where
 import Data.List (intercalate, sortOn, transpose)
 import Data.List.Split (keepDelimsL, oneOf, split)
 import Data.Ord (Down (..))
+import Utils.Grid (Grid)
 import Utils.Parser (Parser, doParse, eol, some, token, (<|>))
 
 -- Sorting order is inverted here because in Maybe's, Nothing is considered greater than Just.
 data Rock = Round | Cube deriving (Eq, Ord, Show)
 
-type Grid = [[Maybe Rock]]
-
-parse :: String -> Grid
+parse :: String -> Grid (Maybe Rock)
 parse = doParse parser
 
-parser :: Parser Grid
+parser :: Parser (Grid (Maybe Rock))
 parser = do some parseLine
 
 parseLine :: Parser [Maybe Rock]
@@ -29,20 +28,20 @@ parseRock = parseCube <|> parseRound <|> parseEmpty
     parseRound = do token 'O'; return $ Just Round
     parseEmpty = do token '.'; return Nothing
 
-score :: Grid -> Int
+score :: Grid (Maybe Rock) -> Int
 score g = sum $ zipWith (\i rs -> i * length (filter (== Just Round) rs)) [length g, (length g - 1) .. 1] g
 
-tiltEast :: Grid -> Grid
+tiltEast :: Grid (Maybe Rock) -> Grid (Maybe Rock)
 tiltEast grid = map reverse $ tilt $ map reverse grid
 
-tiltNorth :: Grid -> Grid
+tiltNorth :: Grid (Maybe Rock) -> Grid (Maybe Rock)
 tiltNorth grid = transpose $ tilt $ transpose grid
 
-tiltSouth :: Grid -> Grid
+tiltSouth :: Grid (Maybe Rock) -> Grid (Maybe Rock)
 tiltSouth grid = reverse $ transpose $ tilt $ transpose $ reverse grid
 
-tiltWest :: Grid -> Grid
+tiltWest :: Grid (Maybe Rock) -> Grid (Maybe Rock)
 tiltWest = tilt
 
-tilt :: Grid -> Grid
+tilt :: Grid (Maybe Rock) -> Grid (Maybe Rock)
 tilt = map (\r -> intercalate [] (map (sortOn Data.Ord.Down) $ split (keepDelimsL $ oneOf [Just Cube]) r))

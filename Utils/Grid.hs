@@ -55,6 +55,13 @@ move North (r, c) = (r - 1, c)
 move South (r, c) = (r + 1, c)
 move West (r, c) = (r, c - 1)
 
+-- | Moves a coordinate a given amount of steps in the given direction.
+moves :: Direction -> Int -> Coordinate -> [Coordinate]
+moves East d (r, c) = [(r, c + c') | c' <- [1 .. d]]
+moves North d (r, c) = [(r - r', c) | r' <- [1 .. d]]
+moves South d (r, c) = [(r + r', c) | r' <- [1 .. d]]
+moves West d (r, c) = [(r, c - c') | c' <- [1 .. d]]
+
 -- | Gets whether two coordinates are orthogonally placed.
 --   If both coordinates are equal, they are considered orthogonal.
 orthogonal :: Coordinate -> Coordinate -> Bool
