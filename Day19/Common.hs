@@ -3,6 +3,9 @@ module Day19.Common where
 import Data.Char (isAsciiLower)
 import Data.Map (Map)
 import qualified Data.Map as Map
+import Data.Maybe (catMaybes, mapMaybe)
+import Data.Set (Set)
+import qualified Data.Set as Set
 import Utils.Parser (Parser, char, doParse, eol, integer, optional, some, spot, string, token, (<|>))
 
 data Condition = LessThan Int | GreaterThan Int deriving (Eq, Show)
@@ -69,6 +72,16 @@ evaluateCondition :: Condition -> Int -> Bool
 evaluateCondition (LessThan x) y = y < x
 evaluateCondition (GreaterThan x) y = y > x
 
+findUnreachableWorkflows :: [String] -> Map String [WorkflowStep] -> Set String
+findUnreachableWorkflows keys wfs = Set.difference (Set.fromList keys) reachable
+  where
+    reachable = Set.insert "in" $ Set.fromList $ mapMaybe getTarget (concat $ Map.elems wfs)
+
+getTarget :: WorkflowStep -> Maybe String
+getTarget (Conditional _ _ (Goto x)) = Just x
+getTarget (Goto x) = Just x
+getTarget _ = Nothing
+
 isAccepted :: Map String [WorkflowStep] -> Rating -> Bool
 isAccepted workflows rating = result == Accept
   where
@@ -97,10 +110,10 @@ pruneSteps wfs (x : rest) = x : pruneSteps wfs rest
 pruneSteps _ [] = []
 
 prune :: Map String [WorkflowStep] -> Map String [WorkflowStep]
-prune workflows = Map.map pruneWorkflow workflows
+prune workflows = Map.filterWithKey (\x _ -> not $ Set.member x unreachable) prunedWorkflows
   where
-    pruneWorkflow :: [WorkflowStep] -> [WorkflowStep]
-    pruneWorkflow = pruneSteps workflows
+    prunedWorkflows = Map.map (pruneSteps workflows) workflows
+    unreachable = findUnreachableWorkflows (Map.keys workflows) prunedWorkflows
 
 score :: Rating -> Int
 score rating = sum $ Map.elems rating

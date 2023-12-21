@@ -27,4 +27,4 @@ splitsToRanges s = [(a + 1, b) | (a, b) <- zip splits $ tail splits]
     splits = Set.toAscList s
 
 main :: IO ()
-main = loadInput >>= print . parse
+main = loadInput >>= print . run . fst . parse
