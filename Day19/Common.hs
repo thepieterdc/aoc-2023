@@ -20,7 +20,7 @@ parse = doParse parser
       workflows <- some parseWorkflow
       eol
       ratings <- some parseRating
-      return (prune $ Map.fromList (map (\wf -> (name wf, wf)) workflows), ratings)
+      return (prune $ prune $ prune $ Map.fromList (map (\wf -> (name wf, wf)) workflows), ratings)
 
 parseCondition :: Parser Condition
 parseCondition = parseGreaterThan <|> parseLessThan
@@ -82,6 +82,8 @@ pruneSteps wfs wfSteps | isAlwaysAccept wfSteps = [Accept]
     isAlwaysAccept :: [WorkflowStep] -> Bool
     isAlwaysAccept (Accept : _) = True
     isAlwaysAccept (Conditional _ _ Accept : rest) = isAlwaysAccept rest
+    isAlwaysAccept (Conditional _ _ (Goto x) : rest) = isAlwaysAccept (steps (wfs Map.! x)) && isAlwaysAccept rest
+    isAlwaysAccept (Goto target : rest) = isAlwaysAccept $ steps (wfs Map.! target)
     isAlwaysAccept [] = True
     isAlwaysAccept _ = False
 pruneSteps wfs wfSteps | isAlwaysRefuse wfSteps = [Refuse]
@@ -89,6 +91,8 @@ pruneSteps wfs wfSteps | isAlwaysRefuse wfSteps = [Refuse]
     isAlwaysRefuse :: [WorkflowStep] -> Bool
     isAlwaysRefuse (Refuse : _) = True
     isAlwaysRefuse (Conditional _ _ Refuse : rest) = isAlwaysRefuse rest
+    isAlwaysRefuse (Conditional _ _ (Goto x) : rest) = isAlwaysRefuse (steps (wfs Map.! x)) && isAlwaysRefuse rest
+    isAlwaysRefuse (Goto target : rest) = isAlwaysRefuse $ steps (wfs Map.! target)
     isAlwaysRefuse [] = True
     isAlwaysRefuse _ = False
 pruneSteps wfs (x : rest) = x : pruneSteps wfs rest

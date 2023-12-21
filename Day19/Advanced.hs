@@ -14,7 +14,7 @@ findSplits r (Conditional c (GreaterThan n) _) = Map.insert c (Set.insert n $ r 
 findSplits r (Conditional c (LessThan n) _) = Map.insert c (Set.insert (n - 1) $ r Map.! c) r
 findSplits r _ = r
 
--- run :: Map String Workflow -> Int
+run :: Map String Workflow -> Int
 run wfs = accepted
   where
     splits = foldl findSplits (Map.fromList $ map (,Set.fromList [0, 4000]) "xmas") $ concatMap steps $ Map.elems wfs
