@@ -70,3 +70,20 @@ parseWorkflowStep = do parseConditional <|> parseAccept <|> parseRefuse <|> pars
 evaluateCondition :: Condition -> Int -> Bool
 evaluateCondition (LessThan x) y = y < x
 evaluateCondition (GreaterThan x) y = y > x
+
+isAccepted :: Map String Workflow -> Rating -> Bool
+isAccepted workflows rating = result == Accept
+  where
+    result = solve workflows rating $ steps (workflows Map.! "in")
+
+score :: Rating -> Int
+score rating = sum $ Map.elems rating
+
+solve :: Map String Workflow -> Rating -> [WorkflowStep] -> WorkflowStep
+solve _ _ (Accept : _) = Accept
+solve _ _ (Refuse : _) = Refuse
+solve wfs rating ((Goto wf : _)) = solve wfs rating $ steps (wfs Map.! wf)
+solve wfs rating ((Conditional c cond target) : next) = solve wfs rating evaluated
+  where
+    value = rating Map.! c
+    evaluated = if evaluateCondition cond value then [target] else next
