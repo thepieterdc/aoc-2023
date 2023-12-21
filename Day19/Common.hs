@@ -20,7 +20,7 @@ parse = doParse parser
       workflows <- some parseWorkflow
       eol
       ratings <- some parseRating
-      return (Map.fromList (map (\wf -> (name wf, wf)) workflows), ratings)
+      return (prune $ Map.fromList (map (\wf -> (name wf, wf)) workflows), ratings)
 
 parseCondition :: Parser Condition
 parseCondition = parseGreaterThan <|> parseLessThan
@@ -75,6 +75,30 @@ isAccepted :: Map String Workflow -> Rating -> Bool
 isAccepted workflows rating = result == Accept
   where
     result = solve workflows rating $ steps (workflows Map.! "in")
+
+pruneSteps :: Map String Workflow -> [WorkflowStep] -> [WorkflowStep]
+pruneSteps wfs wfSteps | isAlwaysAccept wfSteps = [Accept]
+  where
+    isAlwaysAccept :: [WorkflowStep] -> Bool
+    isAlwaysAccept (Accept : _) = True
+    isAlwaysAccept (Conditional _ _ Accept : rest) = isAlwaysAccept rest
+    isAlwaysAccept [] = True
+    isAlwaysAccept _ = False
+pruneSteps wfs wfSteps | isAlwaysRefuse wfSteps = [Refuse]
+  where
+    isAlwaysRefuse :: [WorkflowStep] -> Bool
+    isAlwaysRefuse (Refuse : _) = True
+    isAlwaysRefuse (Conditional _ _ Refuse : rest) = isAlwaysRefuse rest
+    isAlwaysRefuse [] = True
+    isAlwaysRefuse _ = False
+pruneSteps wfs (x : rest) = x : pruneSteps wfs rest
+pruneSteps _ [] = []
+
+prune :: Map String Workflow -> Map String Workflow
+prune workflows = Map.map pruneWorkflow workflows
+  where
+    pruneWorkflow :: Workflow -> Workflow
+    pruneWorkflow (Workflow name steps) = Workflow name $ pruneSteps workflows steps
 
 score :: Rating -> Int
 score rating = sum $ Map.elems rating
