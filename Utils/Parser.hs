@@ -106,7 +106,7 @@ digits = some digit
 
 -- | Matches the end of a line.
 eol :: Parser ()
-eol = token '\n'
+eol = void $ token '\n'
 
 -- | Matches the end of the file.
 end :: Parser ()
@@ -134,9 +134,9 @@ spot p = do c <- char; guard (p c); return c
 string :: String -> Parser String
 string s = do cs <- chars (length s); guard (cs == s); return cs
 
--- | Matches the given character, discarding the result.
-token :: Char -> Parser ()
-token c = void (spot (== c))
+-- | Matches the given character, returning the result.
+token :: Char -> Parser Char
+token c = spot (== c)
 
 -- | Parses the string until the given character is found.
 until :: Char -> Parser String
