@@ -21,7 +21,7 @@ run-simple: compile-simple
 pretest:
 	mkdir -p test/
 	cabal update
-	cabal install --lib split
+	cabal install --lib split containers
 
 test: test-advanced test-simple
 

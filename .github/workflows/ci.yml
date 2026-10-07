@@ -9,7 +9,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - id: set-matrix
         run: echo "matrix=$(ls -d ./Day*/ | jq --raw-input --slurp --compact-output 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
@@ -22,7 +22,7 @@ jobs:
     container:
       env:
         STACK_ROOT: /root/.stack
-      image: haskell:9.4.8-slim
+      image: haskell:9.14.1-slim-bookworm
 
     strategy:
       matrix:
@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - run: make test
         working-directory: ${{ matrix.dir }}
